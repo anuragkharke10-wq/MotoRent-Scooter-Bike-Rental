@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoRent - License Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --orange: #FF6B2B;
+            --orange-dark: #E55A1B;
+            --dark: #0D0D0D;
+            --dark2: #1A1A1A;
+            --dark3: #252525;
+            --gray: #888;
+            --light: #F5F0EB;
+            --white: #FFFFFF;
+            --green: #2ECC71;
+            --red: #E74C3C;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        /* ── NAVBAR ── */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.2rem 3rem;
+            background: rgba(13,13,13,0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .logo {
+            font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px;
+            color: var(--white); text-decoration: none;
+        }
+        .logo span { color: var(--orange); }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-links a {
+            color: var(--gray); text-decoration: none; font-size: 0.9rem;
+            font-weight: 500; transition: color 0.3s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--white); }
+        .nav-btn {
+            background: var(--orange); color: var(--white);
+            padding: 0.6rem 1.4rem; border-radius: 50px;
+            font-weight: 600; font-size: 0.85rem;
+            text-decoration: none; transition: all 0.3s;
+        }
+        .nav-btn:hover { background: var(--orange-dark); }
+
+        /* ── MAIN LAYOUT ── */
+        .page {
+            padding: 8rem 3rem 4rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-tag {
+            display: inline-block;
+            background: rgba(255,107,43,0.12); color: var(--orange);
+            padding: 0.4rem 1rem; border-radius: 50px;
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 1px;
+            text-transform: uppercase; margin-bottom: 1.5rem;
+        }
+        .page h1 {
+            font-size: 3rem; font-weight: 900; line-height: 1.1;
+            letter-spacing: -1.5px; margin-bottom: 0.8rem;
+        }
+        .page h1 em { color: var(--orange); font-style: normal; }
+        .page > p {
+            color: var(--gray); font-size: 1.05rem; max-width: 550px;
+            line-height: 1.7; margin-bottom: 3rem;
+        }
+
+        /* ── FORM CARD ── */
+        .form-card {
+            background: var(--dark2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            position: relative;
+            overflow: hidden;
+        }
+        .form-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--orange), #FF9F43);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        .form-section-title {
+            font-size: 1.1rem; font-weight: 700; margin-bottom: 1.2rem;
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .form-section-title .num {
+            background: var(--orange); color: var(--white);
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700;
+        }
+
+        .form-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-row.full { grid-template-columns: 1fr; }
+
+        .field {
+            display: flex; flex-direction: column;
+        }
+        .field label {
+            font-size: 0.75rem; font-weight: 600; color: var(--gray);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .field input, .field select {
+            background: var(--dark3);
+            border: 1.5px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            color: var(--white);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            outline: none;
+        }
+        .field input::placeholder { color: #555; }
+        .field input:focus, .field select:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(255,107,43,0.15);
+        }
+        .field input.valid { border-color: var(--green); }
+        .field input.invalid { border-color: var(--red); }
+        .field select { cursor: pointer; }
+        .field select option { background: var(--dark3); }
+
+        .field-hint {
+            font-size: 0.7rem; color: var(--gray); margin-top: 0.35rem;
+        }
+        .field-error {
+            font-size: 0.75rem; color: var(--red); margin-top: 0.35rem;
+            display: none;
+        }
+        .field-error.show { display: block; }
+
+        /* ── LICENSE FORMAT INFO ── */
+        .license-info {
+            background: var(--dark3);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 3px solid var(--orange);
+        }
+        .license-info h4 {
+            font-size: 0.8rem; color: var(--orange);
+            text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 0.4rem;
+        }
+        .license-info p {
+            font-size: 0.85rem; color: var(--gray); line-height: 1.6;
+        }
+        .license-info code {
+            font-family: 'Space Mono', monospace;
+            background: rgba(255,107,43,0.1); color: var(--orange);
+            padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem;
+        }
+
+        /* ── CHECKBOX ── */
+        .checkbox-row {
+            display: flex; align-items: flex-start; gap: 0.8rem;
+            margin: 1.5rem 0;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: 20px; height: 20px; accent-color: var(--orange);
+            margin-top: 2px; cursor: pointer;
+        }
+        .checkbox-row label {
+            font-size: 0.9rem; color: var(--gray); cursor: pointer; line-height: 1.5;
+        }
+
+        /* ── SUBMIT ── */
+        .submit-btn {
+            width: 100%; padding: 1rem;
+            background: var(--orange); color: var(--white);
+            border: none; border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        .submit-btn:hover { background: var(--orange-dark); transform: translateY(-2px); }
+        .submit-btn:disabled {
+            background: var(--dark3); color: #555; cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── RESULT MODAL ── */
+        .result {
+            display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            animation: fadeUp 0.4s ease;
+        }
+        .result.success {
+            display: block;
+            background: rgba(46,204,113,0.08);
+            border: 1px solid rgba(46,204,113,0.2);
+        }
+        .result.failure {
+            display: block;
+            background: rgba(231,76,60,0.08);
+            border: 1px solid rgba(231,76,60,0.2);
+        }
+        .result-icon { font-size: 3rem; margin-bottom: 0.8rem; }
+        .result h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .result.success h3 { color: var(--green); }
+        .result.failure h3 { color: var(--red); }
+        .result p { color: var(--gray); font-size: 0.9rem; line-height: 1.6; }
+        .result .booking-id {
+            font-family: 'Space Mono', monospace;
+            background: var(--dark3); padding: 0.6rem 1.2rem;
+            border-radius: 8px; display: inline-block;
+            margin-top: 1rem; font-size: 0.9rem; color: var(--green);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 3rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 1rem;
+            max-width: 900px; margin: 0 auto;
+        }
+        footer p { color: var(--gray); font-size: 0.85rem; }
+        footer a { color: var(--orange); text-decoration: none; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1rem 1.5rem; }
+            .page { padding: 7rem 1.5rem 3rem; }
+            .page h1 { font-size: 2rem; }
+            .form-card { padding: 1.5rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+    <a href="index.html " class="logo">Moto<span>Rent</span></a>
+    <div class="nav-links">
+        <a href="index.html ">Vehicles</a>
+        <a href="verification.html" class="active">Verify License</a>
+        <a href="verification.html" class="nav-btn">Book Now</a>
+    </div>
+</nav>
+
+<!-- PAGE -->
+<section class="page">
+    <div class="page-tag">🪪 License Verification</div>
+    <h1>Verify Your <em>License</em></h1>
+    <p>Indian driving license required for all rentals. Complete the form below and we'll validate your details instantly.</p>
+
+    <div class="form-card">
+        <!-- SECTION 1: Personal Info -->
+        <div class="form-section">
+            <div class="form-section-title"><span class="num">1</span> Personal Information</div>
+            <div class="form-row">
+                <div class="field">
+                    <label>Full Name</label>
+                    <input type="text" id="fullName" placeholder="e.g. Anurag Kharke" required>
+                    <div class="field-error" id="nameError">Please enter your full name</div>
+                </div>
+                <div class="field">
+                    <label>Date of Birth</label>
+                    <input type="date" id="dob" required>
+                    <div class="field-error" id="dobError">You must be at least 18 years old</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input type="tel" id="phone" placeholder="e.g. 9876543210" maxlength="10">
+                    <div class="field-error" id="phoneError">Enter a valid 10-digit phone number</div>
+                </div>
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="e.g. anurag@email.com">
+                    <div class="field-error" id="emailError">Enter a valid email address</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: License Details -->
+        <div class="form-section">
+            <div class="form-section-title"><span class="num">2</span> License Details</div>
+
+            <div class="license-info">
+                <h4>Accepted Format</h4>
+                <p>Indian DL number: <code>SS-RRYYYYNNNNNNN</code><br>
+                Example: <code>MH-0220230012345</code> — State code, RTO, Year, Serial number.<br>
+                Must be 16 characters total (with hyphen). Only <strong>MCWG / MC EX / MC</strong> vehicle class accepted.</p>
+            </div>
+
+            <div class="form-row">
+                <div class="field">
+                    <label>Driving License Number</label>
+                    <input type="text" id="licenseNo" placeholder="e.g. MH-0220230012345" maxlength="18" style="text-transform: uppercase;">
+                    <div class="field-hint">Format: SS-RRYYYYNNNNNNN (16 chars)</div>
+                    <div class="field-error" id="licenseError">Invalid license format</div>
+                </div>
+                <div class="field">
+                    <label>Vehicle Class</label>
+                    <select id="vehicleClass">
+                        <option value="">Select vehicle class</option>
+                        <option value="MCWG">MCWG — Motorcycle With Gear</option>
+                        <option value="MC EX">MC EX — Motorcycle (Learner Exempt)</option>
+                        <option value="MC">MC — Motorcycle</option>
+                        <option value="LMV">LMV — Light Motor Vehicle</option>
+                        <option value="TRANS">TRANS — Transport</option>
+                    </select>
+                    <div class="field-error" id="classError">Select a two-wheeler vehicle class</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field">
+                    <label>Issue Date</label>
+                    <input type="date" id="issueDate">
+                    <div class="field-error" id="issueError">Issue date is required</div>
+                </div>
+                <div class="field">
+                    <label>Expiry Date</label>
+                    <input type="date" id="expiryDate">
+                    <div class="field-error" id="expiryError">License must not be expired</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="field">
+                    <label>Issuing State</label>
+                    <select id="state">
+                        <option value="">Select state</option>
+                        <option value="MH">Maharashtra</option>
+                        <option value="DL">Delhi</option>
+                        <option value="KA">Karnataka</option>
+                        <option value="TN">Tamil Nadu</option>
+                        <option value="GJ">Gujarat</option>
+                        <option value="RJ">Rajasthan</option>
+                        <option value="UP">Uttar Pradesh</option>
+                        <option value="KL">Kerala</option>
+                        <option value="GA">Goa</option>
+                        <option value="AP">Andhra Pradesh</option>
+                        <option value="OTHER">Other</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Rental Location</label>
+                    <select id="location">
+                        <option value="">Select location</option>
+                        <option value="goa">Goa — Calangute</option>
+                        <option value="manali">Manali — Mall Road</option>
+                        <option value="jaipur">Jaipur — MI Road</option>
+                        <option value="mumbai">Mumbai — Andheri</option>
+                        <option value="bangalore">Bangalore — MG Road</option>
+                        <option value="pondicherry">Pondicherry — Beach</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: Agreement -->
+        <div class="form-section">
+            <div class="form-section-title"><span class="num">3</span> Agreement</div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="terms">
+                <label for="terms">I confirm that the above information is accurate. I agree to the rental terms including the security deposit policy, fuel return policy, and damage liability.</label>
+            </div>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" disabled onclick="validateAndSubmit()">
+            Verify & Proceed to Booking
+        </button>
+
+        <!-- Result -->
+        <div class="result" id="result"></div>
+    </div>
+</section>
+
+<footer>
+    <p>© 2025 MotoRent — Scooter & Bike Rental. All rights reserved.</p>
+    <p>Made by <a href="#">Anurag Kharke</a> | Case Study 36</p>
+</footer>
+
+<script>
+// ── Enable button only when terms checked ──
+document.getElementById('terms').addEventListener('change', function () {
+    document.getElementById('submitBtn').disabled = !this.checked;
+});
+
+// ── Real-time validation on inputs ──
+document.getElementById('licenseNo').addEventListener('input', function () {
+    const val = this.value.toUpperCase().trim();
+    const regex = /^[A-Z]{2}-\d{13}$/;
+    if (val.length > 0) {
+        this.className = regex.test(val) ? 'valid' : 'invalid';
+    } else {
+        this.className = '';
+    }
+});
+
+document.getElementById('phone').addEventListener('input', function () {
+    const val = this.value.trim();
+    const regex = /^[6-9]\d{9}$/;
+    if (val.length > 0) {
+        this.className = regex.test(val) ? 'valid' : 'invalid';
+    } else {
+        this.className = '';
+    }
+});
+
+document.getElementById('email').addEventListener('input', function () {
+    const val = this.value.trim();
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (val.length > 0) {
+        this.className = regex.test(val) ? 'valid' : 'invalid';
+    } else {
+        this.className = '';
+    }
+});
+
+// ── Clear errors on input ──
+document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', () => {
+        const errorEl = document.getElementById(el.id + 'Error');
+        if (errorEl) errorEl.classList.remove('show');
+    });
+});
+
+// ── Main Validation ──
+function validateAndSubmit() {
+    let valid = true;
+
+    // Reset all errors
+    document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+    document.getElementById('result').className = 'result';
+    document.getElementById('result').innerHTML = '';
+
+    // 1. Full Name
+    const name = document.getElementById('fullName').value.trim();
+    if (name.length < 3) {
+        document.getElementById('nameError').classList.add('show');
+        valid = false;
+    }
+
+    // 2. DOB — must be 18+
+    const dob = document.getElementById('dob').value;
+    if (dob) {
+        const age = Math.floor((new Date() - new Date(dob)) / (365.25 * 24 * 60 * 60 * 1000));
+        if (age < 18) {
+            document.getElementById('dobError').classList.add('show');
+            valid = false;
+        }
+    } else {
+        document.getElementById('dobError').textContent = 'Date of birth is required';
+        document.getElementById('dobError').classList.add('show');
+        valid = false;
+    }
+
+    // 3. Phone — 10 digits starting with 6-9
+    const phone = document.getElementById('phone').value.trim();
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+        document.getElementById('phoneError').classList.add('show');
+        valid = false;
+    }
+
+    // 4. Email
+    const email = document.getElementById('email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        document.getElementById('emailError').classList.add('show');
+        valid = false;
+    }
+
+    // 5. License Number — Format: SS-RRYYYYNNNNNNN (2 letters, hyphen, 13 digits)
+    const license = document.getElementById('licenseNo').value.toUpperCase().trim();
+    const licenseRegex = /^[A-Z]{2}-\d{13}$/;
+    if (!licenseRegex.test(license)) {
+        document.getElementById('licenseError').classList.add('show');
+        valid = false;
+    }
+
+    // 6. Vehicle Class — must be MCWG, MC EX, or MC
+    const vClass = document.getElementById('vehicleClass').value;
+    const allowedClasses = ['MCWG', 'MC EX', 'MC'];
+    if (!allowedClasses.includes(vClass)) {
+        document.getElementById('classError').classList.add('show');
+        if (vClass === 'LMV' || vClass === 'TRANS') {
+            document.getElementById('classError').textContent = 'LMV/Transport class not valid for two-wheeler rental';
+        }
+        valid = false;
+    }
+
+    // 7. Issue Date
+    const issueDate = document.getElementById('issueDate').value;
+    if (!issueDate) {
+        document.getElementById('issueError').classList.add('show');
+        valid = false;
+    }
+
+    // 8. Expiry Date — must be in the future
+    const expiryDate = document.getElementById('expiryDate').value;
+    if (!expiryDate || new Date(expiryDate) < new Date()) {
+        document.getElementById('expiryError').classList.add('show');
+        if (expiryDate && new Date(expiryDate) < new Date()) {
+            document.getElementById('expiryError').textContent = 'Your license has expired!';
+        }
+        valid = false;
+    }
+
+    // ── Show Result ──
+    const resultDiv = document.getElementById('result');
+
+    if (valid) {
+        const bookingId = 'MR-' + Date.now().toString().slice(-8);
+        resultDiv.className = 'result success';
+        resultDiv.innerHTML = `
+            <div class="result-icon">✅</div>
+            <h3>License Verified Successfully!</h3>
+            <p>Welcome, <strong>${name}</strong>! Your driving license <strong>${license}</strong> has been verified.
+            You're all set to rent a vehicle from MotoRent.</p>
+            <div class="booking-id">Booking ID: ${bookingId}</div>
+            <p style="margin-top:1rem;"><a href="index.html" style="color:var(--orange);font-weight:600;">← Browse Vehicles</a></p>
+        `;
+    } else {
+        resultDiv.className = 'result failure';
+        resultDiv.innerHTML = `
+            <div class="result-icon">❌</div>
+            <h3>Verification Failed</h3>
+            <p>Please fix the highlighted errors above and try again. All fields must be valid before you can proceed with the booking.</p>
+        `;
+    }
+
+    resultDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+</script>
+
+</body>
+</
